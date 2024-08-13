@@ -12,7 +12,7 @@ if ($conn->connect_error) {
 date_default_timezone_set('America/Santiago');
 
 // Consulta para obtener login y contraseña
-$sql = "SELECT id, login, contraseña FROM hash_backup";
+$sql = "SELECT id, login, contraseña FROM hash";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
@@ -56,7 +56,7 @@ if ($result->num_rows > 0) {
 
         // Actualizar la tabla con el hash y el timestamp obtenidos
         if ($hash) {
-            $updateSql = "UPDATE hash_backup SET hash = '$hash', timestamp = '$timestamp' WHERE id = $id";
+            $updateSql = "UPDATE hash SET hash = '$hash', timestamp = '$timestamp' WHERE id = $id";
             if ($conn->query($updateSql) === TRUE) {
                 echo "Registro ID $id actualizado con éxito.<br>";
             } else {
