@@ -1,7 +1,8 @@
 <?php
+$id=$_GET['id'];
 set_time_limit(1200);
 
-$conn = new mysqli('ls-3c0c538286def4da7f8273aa5531e0b6eee0990c.cylsiewx0zgx.us-east-1.rds.amazonaws.com','dbmasteruser','eF5D;6VzP$^7qDryBzDd,`+w(5e4*qI+','masgps');
+$conn = new mysqli('ls-3c0c538286def4da7f8273aa5531e0b6eee0990c.cylsiewx0zgx.us-east-1.rds.amazonaws.com', 'dbmasteruser', 'eF5D;6VzP$^7qDryBzDd,`+w(5e4*qI+', 'masgps');
 
 // Verificar la conexión
 if ($conn->connect_error) {
@@ -11,15 +12,18 @@ if ($conn->connect_error) {
 // Configurar la zona horaria para Santiago de Chile
 date_default_timezone_set('America/Santiago');
 
-// Consulta para obtener login y contraseña
-$sql = "SELECT id, login, contraseña FROM hash";
+//$id = 39;
+
+$sql = "SELECT id, login, contraseña FROM hash where id=$id";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $id = $row["id"];
-        $login = trim($row["login"]);
-        $contraseña = trim($row["contraseña"]);
+       echo $login = trim($row["login"]);
+       echo "<br>";
+        echo $contraseña = trim($row["contraseña"]);
+        echo "<br>";
 
         // Configuración de cURL
         $curl = curl_init();
@@ -44,18 +48,19 @@ if ($result->num_rows > 0) {
                 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
             ),
         ));
-
+        echo 
         $response = curl_exec($curl);
         curl_close($curl);
 
         $json = json_decode($response);
-        $hash = $json->hash;
 
+       
         // Obtener la fecha y hora actual de Santiago de Chile
         $timestamp = date("Y-m-d H:i:s");
 
         // Actualizar la tabla con el hash y el timestamp obtenidos
-        if ($hash) {
+        if (isset($json->hash)) {
+            $hash = $json->hash;
             $updateSql = "UPDATE hash SET hash = '$hash', timestamp = '$timestamp' WHERE id = $id";
             if ($conn->query($updateSql) === TRUE) {
                 echo "Registro ID $id actualizado con éxito.<br>";
@@ -71,4 +76,3 @@ if ($result->num_rows > 0) {
 }
 
 $conn->close();
-?>
